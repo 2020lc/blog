@@ -1,20 +1,19 @@
 <template>
-  <div class="home-container">
-    <HomeNav />
-    <HomeIntroduce ref="introduceRef" />
+  <div class="home">
+    <h1>小宸的博客</h1>
+    <div>
+      <div>2024/01/01 创建</div>
+      <div>目的：记录所学，沉淀知识</div>
+    </div>
   </div>
 </template>
 
-<script lang="ts" setup>
-import HomeNav from './home-nav.vue';
-import HomeIntroduce from './home-introduce.vue';
-</script>
+<script lang="ts" setup></script>
 
 <style lang="less" scoped>
-.home-container {
-  height: 100%;
-  min-width: 1280px;
-  background: url(../../assets/images/backgroud.jpg) no-repeat;
-  background-size: cover;
+.home {
+  position: relative;
+  color: @lightColor;
+  font-size: 14px;
 }
 </style>

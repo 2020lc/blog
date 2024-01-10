@@ -5,7 +5,7 @@ export const options = {
       onClick: {
         // 开启鼠标点击的效果
         enable: true,
-        mode: 'push',
+        mode: 'repulse',
       },
       onHover: {
         // 开启鼠标悬浮的效果(线条跟着鼠标移动)
@@ -22,8 +22,9 @@ export const options = {
         opacity: 0.8,
         size: 40,
       },
-      push: {
-        quantity: 4,
+      repulse: {
+        distance: 300,
+        duration: 2,
       },
       grab: {
         distance: 200,
@@ -67,7 +68,7 @@ export const options = {
         enable: true,
         value_area: 800,
       },
-      value: 60, //粒子数
+      value: 80, //粒子数
     },
     opacity: {
       //粒子透明度
