@@ -15,14 +15,23 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 
 const menuList = [
   { name: '首页', path: '/', id: 1 },
   { name: '待开发', path: '/other', id: 2 },
 ];
 
-const currentMenu = ref(1);
+const route = useRoute();
+const currentMenu = ref(0);
+watch(route, (val) => {
+  menuList.forEach((menu) => {
+    if (val.path.includes(menu.path)) {
+      currentMenu.value = menu.id;
+    }
+  });
+});
 const changeMenu = (menuId: number) => {
   currentMenu.value = menuId;
 };
