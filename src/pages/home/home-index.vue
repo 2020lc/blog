@@ -2,7 +2,7 @@
   <div class="home">
     <h1>小宸的博客</h1>
     <div>
-      <div>2024/01/01 创建</div>
+      <div>2024/01/01 创建 gh-pages</div>
       <div>目的：记录所学，沉淀知识</div>
     </div>
     <div class="article-list">
@@ -19,9 +19,9 @@
 const articleList = [
   {
     id: 1,
-    title: '下载的那些事',
-    abstract: 'fe下载、bff下载、下载的历史...',
-    date: '2024-01-11 23:44',
+    title: "下载的那些事",
+    abstract: "fe下载、bff下载、下载的历史...",
+    date: "2024-01-11 23:44",
   },
 ];
 </script>
