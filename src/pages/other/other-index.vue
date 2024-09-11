@@ -9,6 +9,5 @@
 <style lang="less" scoped>
 .other {
   font-size: 14px;
-  color: @primaryColor;
 }
 </style>

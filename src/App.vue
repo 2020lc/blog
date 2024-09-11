@@ -1,15 +1,13 @@
 <template>
   <div class="app-container">
     <vue-particles id="tsparticles" :options="options" />
-    <HomeNav />
     <div class="content">
       <router-view></router-view>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import HomeNav from '@/pages/home/home-nav.vue';
-import { options } from '@/constant/plugins/tsparticles';
+import { options } from "@/constant/plugins/tsparticles";
 </script>
 <style>
 html,
@@ -29,8 +27,10 @@ body {
 }
 .app-container {
   height: 100%;
-  min-width: 1280px;
-  background: url(./assets/images/backgroud.jpg) no-repeat;
+  min-width: 320px;
   background-size: cover;
+  overflow: hidden;
+  background-color: #000;
+  color: #fff;
 }
 </style>

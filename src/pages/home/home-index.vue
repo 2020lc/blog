@@ -29,7 +29,6 @@ const articleList = [
 <style lang="less" scoped>
 .home {
   position: relative;
-  color: @lightColor;
   font-size: 14px;
 
   .article-list {

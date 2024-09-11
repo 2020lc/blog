@@ -11,10 +11,14 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Other',
     component: () => import('@/pages/other/other-index.vue'),
   },
+  {
+    path: '/schedule',
+    name: 'Schedule',
+    component: () => import('@/pages/schedule/schedule-index.vue'),
+  }
 ];
 
 const baseUrl = process.env.NODE_ENV === 'development' ? '/' : '/blog';
-console.log(baseUrl);
 const router = createRouter({
   history: createWebHistory(baseUrl),
   routes,
