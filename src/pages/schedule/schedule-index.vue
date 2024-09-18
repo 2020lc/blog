@@ -50,7 +50,19 @@ const diffWeek = computed(() => {
   const curDay = dayjs();
   return curDay.diff(termBeginsDay, "week") + 1;
 });
-const curWeek = ref(date.get("day"));
+const weekMap: Record<string, string> = {
+  1: "一",
+  2: "二",
+  3: "三",
+  4: "四",
+  5: "五",
+  6: "六",
+  7: "日",
+};
+const curWeek = computed(() => {
+  const week = date.get("day").toString();
+  return weekMap[week];
+});
 
 const tableData = [
   ["第一节", "第二节", "第三节", "第四节", "选修"],

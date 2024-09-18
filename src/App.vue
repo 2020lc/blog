@@ -1,14 +1,9 @@
 <template>
   <div class="app-container">
-    <vue-particles id="tsparticles" :options="options" />
-    <div class="content">
-      <router-view></router-view>
-    </div>
+    <router-view></router-view>
   </div>
 </template>
-<script lang="ts" setup>
-import { options } from "@/constant/plugins/tsparticles";
-</script>
+<script lang="ts" setup></script>
 <style>
 html,
 body,
