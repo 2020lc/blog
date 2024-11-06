@@ -5,6 +5,9 @@
       <span>{{ curDate }}</span>
       <span>周{{ curWeek }}</span>
       <span>本学期第{{ diffWeek }}周</span>
+      <div>
+        距2025-01-12日仅剩<span> {{ meetRemainDay }} </span>
+      </div>
     </div>
     <div class="container">
       <table border="1">
@@ -108,6 +111,17 @@ const beginTiming = () => {
   }, 1000);
 };
 beginTiming();
+
+const meetDay = dayjs("2025-01-12");
+const meetRemainDay = computed(() => {
+  const day = meetDay.diff(curDate.value, "day");
+  const hour = meetDay.diff(curDate.value, "hours") % 24;
+  const minute = meetDay.diff(curDate.value, "minute") % 60;
+  const second = meetDay.diff(curDate.value, "seconds") % 60;
+  return ` ${day} 天 ${String(hour).padStart(2, "0")} 时 ${String(
+    minute
+  ).padStart(2, "0")} 分 ${String(second).padStart(2, "0")} 秒`;
+});
 
 onBeforeUnmount(() => {
   clearInterval(times.value);
