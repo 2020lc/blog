@@ -1,166 +1,41 @@
 <template>
   <div class="schedule-home">
-    <h1>2024年秋季课程表</h1>
-    <div class="extra">
-      <span>{{ curDate }}</span>
-      <span>周{{ curWeek }}</span>
-      <span>本学期第{{ diffWeek }}周</span>
-      <div>
-        距2025-01-12日仅剩<span> {{ meetRemainDay }} </span>
-      </div>
-    </div>
-    <div class="container">
-      <table border="1">
-        <thead>
-          <tr>
-            <th v-for="item in tableHead" :key="item">{{ item }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(row, rowIndex) in telTableData" :key="rowIndex">
-            <td
-              v-for="(col, colIndex) in row"
-              :class="{ headCol: colIndex === 0 }"
-              :key="rowIndex + colIndex"
-            >
-              {{ col }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <ScheduleHeader :scheduleInfo="scheduleInfo"/>
+    <br/>
+    <ScheduleTable :scheduleInfo="scheduleInfo" />
   </div>
 </template>
 
 <script lang="ts" setup>
+import { ref, Ref, onBeforeUnmount } from "vue";
 import dayjs from "dayjs";
-import { ref, computed, onBeforeUnmount } from "vue";
+import ScheduleHeader from './schedule-header.vue';
+import ScheduleTable from './scheduleTable/table-index.vue';
+import { ISchedule } from '@/types/schedule';
 
-let date = dayjs();
-const tableHead = ref([
-  "/",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-  "Times",
-]);
-const diffWeek = computed(() => {
-  const termBeginsDay = dayjs("2024/09/02");
-  const curDay = dayjs();
-  return curDay.diff(termBeginsDay, "week") + 1;
+const scheduleInfo: Ref<ISchedule> = ref({
+  termBeginDate: dayjs('2025-02-18'),
+  curDate: dayjs(),
+  termWeek: 0,
 });
-const weekMap: Record<string, string> = {
-  1: "一",
-  2: "二",
-  3: "三",
-  4: "四",
-  5: "五",
-  6: "六",
-  7: "日",
-};
-const curWeek = computed(() => {
-  const week = date.get("day").toString();
-  return weekMap[week];
-});
+const timer = setInterval(() => {
+  const {termBeginDate, curDate } = scheduleInfo.value;
+  scheduleInfo.value.curDate = curDate.add(1, 'second');
+  const diffWeek = curDate.diff(termBeginDate, "week") + 1;
+  scheduleInfo.value.termWeek = diffWeek;
+}, 1000);
 
-const tableData = [
-  ["第一节", "第二节", "第三节", "第四节", "选修"],
-  ["毛概", "传播策划", "新媒体概论"],
-  ["", "媒介经营管理", "", ""],
-  ["新闻摄影", "", "消息写作学", ""],
-  [
-    "",
-    "英语",
-    "中外新闻实务",
-    "广播电视学",
-    diffWeek.value % 2 === 1 ? "影视艺术鉴赏（选）" : "",
-  ],
-  ["", "", "社会心理学", "纪录片创作与研究"],
-  [],
-  [],
-  [
-    "08:00 - 09:40",
-    "10:00 - 11:40",
-    "14:00 - 15.40",
-    "16:00 - 17:40",
-    "18:30 - 20:30",
-  ],
-];
-const telTableData = computed(() => {
-  const ans: any = [];
-  tableData.forEach((headItem, i) => {
-    headItem.forEach((cellItem, j) => {
-      if (!ans[j]) {
-        ans[j] = [];
-      }
-      ans[j][i] = cellItem;
-    });
-  });
-  return ans;
-});
-const times = ref<number>();
-const curDate = ref(date.format("YYYY-MM-DD HH:mm:ss"));
-const beginTiming = () => {
-  times.value = setInterval(() => {
-    date = date.add(1, "second");
-    curDate.value = date.format("YYYY-MM-DD HH:mm:ss");
-  }, 1000);
-};
-beginTiming();
 
-const meetDay = dayjs("2025-01-12");
-const meetRemainDay = computed(() => {
-  const day = meetDay.diff(curDate.value, "day");
-  const hour = meetDay.diff(curDate.value, "hours") % 24;
-  const minute = meetDay.diff(curDate.value, "minute") % 60;
-  const second = meetDay.diff(curDate.value, "seconds") % 60;
-  return ` ${day} 天 ${String(hour).padStart(2, "0")} 时 ${String(
-    minute
-  ).padStart(2, "0")} 分 ${String(second).padStart(2, "0")} 秒`;
-});
+
+
 
 onBeforeUnmount(() => {
-  clearInterval(times.value);
+  clearInterval(timer);
 });
+
 </script>
 
 <style lang="less" scoped>
 .schedule-home {
-  margin: auto;
-  font-size: 14px;
-  overflow: scroll;
-  .extra {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 12px;
-    color: @secondaryText;
-    span {
-      margin-right: 8px;
-    }
-  }
-  .container {
-    overflow: scroll;
-  }
-  table {
-    border-collapse: collapse;
-    margin: auto;
-    th,
-    td {
-      width: 120px;
-      height: 40px;
-      padding: 8px;
-    }
-    td {
-      color: @primaryText;
-      min-width: 100px;
-    }
-    .headCol {
-      color: #fff;
-    }
-  }
 }
 </style>
