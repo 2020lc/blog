@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "deploy": "gh-pages -d dist -r https://github.com/2020lc/blog -b feature",
+    "deploy": "gh-pages -d dist -r https://github.com/2020lc/blog -b static",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -13,7 +13,7 @@
     "@tsparticles/vue3": "^3.0.0",
     "core-js": "^3.8.3",
     "dayjs": "^1.11.13",
-    "element-plus": "^2.4.4",
+    "element-plus": "^2.9.4",
     "style-loader": "^3.3.3",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"
