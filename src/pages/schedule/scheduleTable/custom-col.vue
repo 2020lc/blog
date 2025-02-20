@@ -25,9 +25,25 @@ const showCourse = computed(() => {
     return "";
   }
   let useCourse = row.find((course: any) => {
-    const target = course.selectDateInfo.find(
-      (item: any) => item.week === props.week
-    );
+    const target = course.selectDateInfo.find((item: any) => {
+      const useWeek = item.week === props.week;
+      if (!useWeek) {
+        return false;
+      }
+      if (item.oddEven === "normal") {
+        return true;
+      }
+      if (item.oddEven === "odd" && termWeek % 2 === 1) {
+        return true;
+      }
+      if (item.oddEven === "even" && termWeek % 2 === 0) {
+        return true;
+      }
+      return false;
+    });
+    if (!target) {
+      return false;
+    }
     const { startWeek, endWeek } = target;
     const isBegin = termWeek >= startWeek;
     const noEnd = termWeek <= (endWeek || 99);
@@ -36,19 +52,7 @@ const showCourse = computed(() => {
   if (!useCourse) {
     return "";
   }
-  const { oddEven } = useCourse.selectDateInfo.find(
-    (item: any) => item.week === props.week
-  );
-  if (oddEven === "normal") {
-    return useCourse;
-  }
-  if (oddEven === "odd" && termWeek % 2 === 1) {
-    return useCourse;
-  }
-  if (oddEven === "even" && termWeek % 2 === 0) {
-    return useCourse;
-  }
-  return "";
+  return useCourse;
 });
 </script>
 

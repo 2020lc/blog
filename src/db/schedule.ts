@@ -171,9 +171,9 @@ const dxyydxII = {
     },
   ],
 };
-const cbysymtpp = {
-  id: "cbysymtpp",
-  name: "传播艺术与媒体批评",
+const cbysymjpp = {
+  id: "cbysymjpp",
+  name: "传播艺术与媒介批评",
   location: "紫金港东1A-217",
   selectDateInfo: [
     {
@@ -350,7 +350,7 @@ export const allSelectCourse = [
   cbch,
   ysysgl,
   dxyydxII,
-  cbysymtpp,
+  cbysymjpp,
   dsjmbpyzz,
   mjsy,
   sxddyfz,

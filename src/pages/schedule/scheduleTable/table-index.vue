@@ -1,13 +1,14 @@
 <template>
   <el-table
     class="schedule-table"
+    max-height="600"
+    header-cell-class-name="custom-header-cell"
+    highlight-current-row="false"
     :data="tableData"
     :span-method="objectSpanMethod"
     :border="true"
-    max-height="600"
-    header-cell-class-name="custom-header-cell"
     :cell-class-name="dynamicCellClassName"
-    highlight-current-row="false"
+    :resizable="false"
   >
     <el-table-column
       label="时间"
@@ -165,10 +166,11 @@ const dynamicCellClassName = ({ columnIndex }: any) => {
   return className;
 };
 const locateCurrentCourseCol = () => {
-  const hightLightDom = document.querySelector(".hight-light .cell");
+  const hightLightDom = document.querySelector(".hight-light");
   if (hightLightDom) {
     hightLightDom.scrollIntoView({
       behavior: "smooth",
+      inline: "center",
     });
   } else {
     setTimeout(() => {

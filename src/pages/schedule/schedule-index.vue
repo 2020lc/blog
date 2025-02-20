@@ -14,7 +14,7 @@ import ScheduleTable from "./scheduleTable/table-index.vue";
 import { ISchedule } from "@/types/schedule";
 
 const scheduleInfo: Ref<ISchedule> = ref({
-  termBeginDate: dayjs("2025-02-18"),
+  termBeginDate: dayjs("2025-02-17"),
   curDate: dayjs(),
   termWeek: 0,
 });
