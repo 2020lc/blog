@@ -32,6 +32,6 @@ onBeforeUnmount(() => {
 
 <style lang="less" scoped>
 .schedule-home {
-  overflow-y: scroll;
+  overflow: auto;
 }
 </style>

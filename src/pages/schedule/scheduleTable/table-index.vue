@@ -12,7 +12,8 @@
     <el-table-column
       label="时间"
       width="120"
-      :fixed="true"
+      fixed="left"
+      prop="time"
       headerAlign="center"
     >
       <template #default="scope">
@@ -126,7 +127,6 @@ const getTableData = () => {
   });
 };
 const tableData = getTableData();
-console.log(tableData);
 
 const termWeek = computed(() => props.scheduleInfo.termWeek);
 const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
@@ -170,25 +170,44 @@ const dynamicCellClassName = ({ columnIndex }: any) => {
 .time-box {
   text-align: center;
   color: #fff;
-  background-color: #000;
+  .index {
+    color: #ccc;
+    font-weight: bold;
+  }
   .time {
-    color: @primaryText;
+    font-weight: bold;
   }
 }
-.schedule-table {
-  ::v-deep(.custom-header-cell) {
-    color: #fff;
-    background-color: #000 !important;
+.schedule-table.el-table {
+  font-size: 1rem;
+  min-width: 600px;
+  ::v-deep(.el-table__header-wrapper) {
+    .custom-header-cell {
+      color: #fff;
+      background-color: #000
+    }
   }
-  ::v-deep(.custom-cell) {
-    color: @primaryText;
-    background-color: #000;
+  ::v-deep(.el-table__body-wrapper) {
+    .el-table__row {
+      pointer-events: none;
+      color: @primaryText;
+      background-color: #000;
+    }
+    .hight-light {
+      color: @secondaryText !important;
+    }
   }
-  ::v-deep(.hight-light) {
-    color: @secondaryText !important;
+}
+// 滚动固定
+.el-table.is-scrolling-right {
+  ::v-deep(.el-table-fixed-column--left.is-last-column.el-table__cell) {
+    border-right: 1px solid #fff;
   }
-  ::v-deep(.el-table__row:hover) {
-    background-color: transparent !important;
+}
+// 滚动左侧固定阴影
+.el-table.is-scrolling-middle {
+  ::v-deep(.el-table-fixed-column--left.is-last-column::before) {
+    box-shadow: 10px 0 10px -10px #fff inset;
   }
 }
 </style>

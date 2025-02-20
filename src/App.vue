@@ -9,6 +9,7 @@ html,
 body,
 #app {
   height: 100%;
+  font-size: 12px;
 }
 body {
   padding: 0;

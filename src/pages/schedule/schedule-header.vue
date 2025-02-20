@@ -34,7 +34,7 @@
   <style lang="less" scoped>
   .schedule-header {
     .row {
-      font-size: 16px;
+      font-size: 1.25rem;
       font-weight: bold;
       color: @secondaryText;
       span + span {
