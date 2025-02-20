@@ -164,6 +164,21 @@ const dynamicCellClassName = ({ columnIndex }: any) => {
   }
   return className;
 };
+const locateCurrentCourseCol = () => {
+  const hightLightDom = document.querySelector(".hight-light .cell");
+  if (hightLightDom) {
+    hightLightDom.scrollIntoView({
+      behavior: "smooth",
+    });
+  } else {
+    setTimeout(() => {
+      locateCurrentCourseCol();
+    }, 500);
+  }
+};
+setTimeout(() => {
+  locateCurrentCourseCol();
+}, 1000);
 </script>
 
 <style lang="less" scoped>
@@ -180,11 +195,10 @@ const dynamicCellClassName = ({ columnIndex }: any) => {
 }
 .schedule-table.el-table {
   font-size: 1rem;
-  min-width: 600px;
   ::v-deep(.el-table__header-wrapper) {
     .custom-header-cell {
       color: #fff;
-      background-color: #000
+      background-color: #000;
     }
   }
   ::v-deep(.el-table__body-wrapper) {

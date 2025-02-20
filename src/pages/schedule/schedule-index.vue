@@ -30,8 +30,4 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="less" scoped>
-.schedule-home {
-  overflow: auto;
-}
-</style>
+<style lang="less" scoped></style>
