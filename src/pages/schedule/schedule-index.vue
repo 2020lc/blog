@@ -1,8 +1,8 @@
 <template>
   <div class="schedule-home">
-    <ScheduleHeader :scheduleInfo="scheduleInfo" />
+    <ScheduleHeader :termInformation="termInformation" />
     <br />
-    <ScheduleTable :scheduleInfo="scheduleInfo" />
+    <ScheduleTable :termInformation="termInformation" />
   </div>
 </template>
 
@@ -11,18 +11,20 @@ import { ref, Ref, onBeforeUnmount } from "vue";
 import dayjs from "dayjs";
 import ScheduleHeader from "./schedule-header.vue";
 import ScheduleTable from "./scheduleTable/table-index.vue";
-import { ISchedule } from "@/types/schedule";
+import { ITermInformation } from "@/types/schedule";
 
-const scheduleInfo: Ref<ISchedule> = ref({
-  termBeginDate: dayjs("2025-02-17"),
+const termInformation: Ref<ITermInformation> = ref({
+  beginDate: dayjs("2025-02-17"),
   curDate: dayjs(),
-  termWeek: 0,
+  overallWeek: 0,
+  isOddWeek: true,
 });
 const timer = setInterval(() => {
-  const { termBeginDate, curDate } = scheduleInfo.value;
-  scheduleInfo.value.curDate = curDate.add(1, "second");
-  const diffWeek = curDate.diff(termBeginDate, "week") + 1;
-  scheduleInfo.value.termWeek = diffWeek;
+  const { beginDate, curDate } = termInformation.value;
+  termInformation.value.curDate = curDate.add(1, "second");
+  const diffWeek = curDate.diff(beginDate, "week") + 1;
+  termInformation.value.overallWeek = diffWeek;
+  termInformation.value.isOddWeek = Boolean(diffWeek % 2);
 }, 1000);
 
 onBeforeUnmount(() => {

@@ -3,7 +3,6 @@
     class="schedule-table"
     max-height="600"
     header-cell-class-name="custom-header-cell"
-    highlight-current-row="false"
     :data="tableData"
     :span-method="objectSpanMethod"
     :border="true"
@@ -33,9 +32,10 @@
     >
       <template #default="scope">
         <CustomCol
-          :row="scope.row[week]"
-          :scheduleInfo="scheduleInfo"
-          :week="week"
+          v-if="scope.row[week]"
+          :courseList="scope.row[week]"
+          :termInformation="termInformation"
+          :inWeek="week"
         />
       </template>
     </el-table-column>
@@ -43,14 +43,21 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineProps } from "vue";
+import { defineProps } from "vue";
 import CustomCol from "./custom-col.vue";
-import { ISchedule } from "@/types/schedule";
-import { allSelectCourse } from "@/db/schedule";
+import {
+  ITermInformation,
+  ICourseScheduleRow,
+  ICourse,
+  ICourseArrangementInfo,
+  InWeekEnum,
+  OddEvenWeekEnum,
+} from "@/types/schedule";
+import { selectCourseList } from "@/db/schedule";
 import dayjs from "dayjs";
 
 interface IProps {
-  scheduleInfo: ISchedule;
+  termInformation: ITermInformation;
 }
 const props = defineProps<IProps>();
 
@@ -66,14 +73,8 @@ const times = [
   "18:30",
   "19:45",
 ];
-const handleTimes = (time: string) => {
-  const [hour, minute] = time.split(":");
-  let date = dayjs().hour(+hour).minute(+minute);
-  date = date.add(45, "minute");
-  return `${time} - ${date.format("HH:mm")}`;
-};
-const weeks = [1, 2, 3, 4, 5, 6, 7];
-const weekMap: any = {
+const weeks: InWeekEnum[] = [1, 2, 3, 4, 5, 6, 7];
+const weekMap: Record<InWeekEnum, string> = {
   1: "周一",
   2: "周二",
   3: "周三",
@@ -83,87 +84,130 @@ const weekMap: any = {
   7: "周日",
 };
 
-const insertData = (
-  obj: any,
-  course: any,
-  selectInfo: any,
-  dtime: string,
+const insertTimeByCourse = (
+  row: Record<string, ICourseScheduleRow>,
+  course: ICourse,
+  courseArrangement: ICourseArrangementInfo,
+  dTime: string,
   count = 1
 ) => {
-  const { week, nodes } = selectInfo;
-  const beginIndex = times.findIndex((time) => time === dtime);
-  if (!obj[dtime]) {
-    obj[dtime] = { time: dtime, [week]: [course] };
+  const { inWeek, nodes } = courseArrangement;
+  const dTimeIndex = times.findIndex((time) => time === dTime);
+  if (!row[dTime]) {
+    row[dTime] = { time: dTime, [inWeek]: [course] };
     if (count < nodes) {
-      const nextTime = times[beginIndex + 1];
-      insertData(obj, course, selectInfo, nextTime, count + 1);
+      const nextTime = times[dTimeIndex + 1];
+      insertTimeByCourse(row, course, courseArrangement, nextTime, count + 1);
     }
     return;
   }
-  const targetWeekObj = obj[dtime][week];
-  if (targetWeekObj) {
-    targetWeekObj.push(course);
+  const courseList = row[dTime][inWeek];
+  if (courseList) {
+    courseList.push(course);
   } else {
-    obj[dtime][week] = [course];
+    row[dTime][inWeek] = [course];
   }
 
   if (count < nodes) {
-    const nextTime = times[beginIndex + 1];
-    insertData(obj, course, selectInfo, nextTime, count + 1);
+    const nextTime = times[dTimeIndex + 1];
+    insertTimeByCourse(row, course, courseArrangement, nextTime, count + 1);
   }
 };
-
 const getTableData = () => {
-  const ans: any = {};
-  allSelectCourse.map((course) => {
-    course.selectDateInfo.map((selectInfo) => {
-      insertData(ans, course, selectInfo, selectInfo.startTime);
+  const timeByCourseScheduleRow: Record<string, ICourseScheduleRow> = {};
+  selectCourseList.map((course) => {
+    course.courseArrangementList.map((courseArrangement) => {
+      insertTimeByCourse(
+        timeByCourseScheduleRow,
+        course,
+        courseArrangement,
+        courseArrangement.startTime
+      );
     });
   });
   return times.map((time) => {
-    if (ans[time]) {
-      return ans[time];
+    if (timeByCourseScheduleRow[time]) {
+      return timeByCourseScheduleRow[time];
     }
     return { time };
   });
 };
-const tableData = getTableData();
+const tableData: ICourseScheduleRow[] = getTableData();
+console.log(tableData);
 
-const termWeek = computed(() => props.scheduleInfo.termWeek);
-const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
-  const cellData = row[columnIndex];
-  const defaultVal = [1, 1];
-  if (!cellData) {
-    return defaultVal;
+const objectSpanMethod = ({
+  row,
+  columnIndex: inWeek,
+}: {
+  row: ICourseScheduleRow;
+  columnIndex: InWeekEnum;
+}) => {
+  const { overallWeek, isOddWeek } = props.termInformation;
+  const courseList: ICourse[] = row[inWeek] || [];
+  const defaultObjectSpan = [1, 1];
+  if (!courseList.length) {
+    return defaultObjectSpan;
   }
-  let useCourse = cellData.find((course: any) => {
-    const target = course.selectDateInfo.find(
-      (item: any) => item.week === columnIndex
-    );
+  let useCourse = courseList.find((course) => {
+    const target = course.courseArrangementList.find((item) => {
+      const inWeekMatch = item.inWeek === inWeek;
+      switch (item.oddEven) {
+        case OddEvenWeekEnum.Normal:
+          return inWeekMatch;
+        case OddEvenWeekEnum.Odd:
+          return inWeekMatch && isOddWeek;
+        case OddEvenWeekEnum.Even:
+          return inWeekMatch && !isOddWeek;
+        default:
+          return false;
+      }
+    });
+    if (!target) {
+      return false;
+    }
     const { startWeek, endWeek } = target;
-    const isBegin = termWeek.value >= startWeek;
-    const noEnd = termWeek.value <= (endWeek || 99);
-    return isBegin && noEnd;
+    const startClass = overallWeek >= startWeek;
+    const noEndClass = overallWeek <= (endWeek || 99);
+    return startClass && noEndClass;
   });
   if (!useCourse) {
-    return defaultVal;
+    return defaultObjectSpan;
   }
-  const { nodes, startTime } =
-    useCourse.selectDateInfo.find((item: any) => item.week === columnIndex) ||
-    {};
+  const useArrangement = useCourse.courseArrangementList.find((item) => {
+    const inWeekMatch = item.inWeek === inWeek;
+    switch (item.oddEven) {
+      case OddEvenWeekEnum.Normal:
+        return inWeekMatch;
+      case OddEvenWeekEnum.Odd:
+        return inWeekMatch && isOddWeek;
+      case OddEvenWeekEnum.Even:
+        return inWeekMatch && isOddWeek;
+      default:
+        return false;
+    }
+  });
+  if (!useArrangement) {
+    return [0, 1];
+  }
   return {
-    rowspan: row.time === startTime ? nodes : 0,
+    rowspan: row.time === useArrangement.startTime ? useArrangement.nodes : 0,
     colspan: 1,
   };
 };
 
-const curWeek = props.scheduleInfo.curDate.day() || 7;
-const dynamicCellClassName = ({ columnIndex }: any) => {
+const curWeek = props.termInformation.curDate.day() || 7;
+const dynamicCellClassName = ({ columnIndex }: { columnIndex: InWeekEnum }) => {
   let className = "custom-cell";
   if (curWeek === columnIndex) {
     className += " hight-light";
   }
   return className;
+};
+const handleTimes = (time: string) => {
+  const [hour, minute] = time.split(":");
+  let date = dayjs().hour(+hour).minute(+minute);
+  date = date.add(45, "minute");
+  return `${time} - ${date.format("HH:mm")}`;
 };
 const locateCurrentCourseCol = () => {
   const hightLightDom = document.querySelector(".hight-light");

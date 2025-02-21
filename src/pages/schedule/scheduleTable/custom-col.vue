@@ -9,50 +9,43 @@
 
 <script lang="ts" setup>
 import { defineProps, computed } from "vue";
-import { ISchedule } from "@/types/schedule";
+import { ITermInformation, ICourse, OddEvenWeekEnum } from "@/types/schedule";
 
 interface IProps {
-  row: any;
-  scheduleInfo: ISchedule;
-  week: number;
+  termInformation: ITermInformation;
+  courseList: ICourse[];
+  inWeek: number;
 }
 const props = defineProps<IProps>();
 
 const showCourse = computed(() => {
-  const { termWeek } = props.scheduleInfo;
-  const row = props.row;
-  if (!row || !termWeek) {
+  const { termInformation, courseList, inWeek } = props;
+  const { overallWeek, isOddWeek } = termInformation || {};
+  if (!courseList || !overallWeek) {
     return "";
   }
-  let useCourse = row.find((course: any) => {
-    const target = course.selectDateInfo.find((item: any) => {
-      const useWeek = item.week === props.week;
-      if (!useWeek) {
-        return false;
+  return courseList.find((course) => {
+    const target = course.courseArrangementList.find((item) => {
+      const inWeekMatch = item.inWeek === inWeek;
+      switch (item.oddEven) {
+        case OddEvenWeekEnum.Normal:
+          return inWeekMatch;
+        case OddEvenWeekEnum.Odd:
+          return inWeekMatch && isOddWeek;
+        case OddEvenWeekEnum.Even:
+          return inWeekMatch && !isOddWeek;
+        default:
+          return false;
       }
-      if (item.oddEven === "normal") {
-        return true;
-      }
-      if (item.oddEven === "odd" && termWeek % 2 === 1) {
-        return true;
-      }
-      if (item.oddEven === "even" && termWeek % 2 === 0) {
-        return true;
-      }
-      return false;
     });
     if (!target) {
       return false;
     }
     const { startWeek, endWeek } = target;
-    const isBegin = termWeek >= startWeek;
-    const noEnd = termWeek <= (endWeek || 99);
-    return isBegin && noEnd;
+    const startClass = overallWeek >= startWeek;
+    const noEndClass = overallWeek <= (endWeek || 99);
+    return startClass && noEndClass;
   });
-  if (!useCourse) {
-    return "";
-  }
-  return useCourse;
 });
 </script>
 
