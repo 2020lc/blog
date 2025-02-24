@@ -1,21 +1,7 @@
 <template>
-  <el-table
-    class="schedule-table"
-    max-height="600"
-    header-cell-class-name="custom-header-cell"
-    :data="tableData"
-    :span-method="objectSpanMethod"
-    :border="true"
-    :cell-class-name="dynamicCellClassName"
-    :resizable="false"
-  >
-    <el-table-column
-      label="时间"
-      width="120"
-      fixed="left"
-      prop="time"
-      headerAlign="center"
-    >
+  <el-table class="schedule-table" max-height="500" header-cell-class-name="custom-header-cell" :data="tableData"
+    :span-method="objectSpanMethod" :border="true" :cell-class-name="dynamicCellClassName" :resizable="false">
+    <el-table-column label="" width="120" fixed="left" prop="time" headerAlign="center">
       <template #default="scope">
         <div class="time-box">
           <div class="index">{{ scope.$index + 1 }}</div>
@@ -23,20 +9,16 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column
-      v-for="week in weeks"
-      :label="weekMap[week]"
-      :key="week"
-      :minWidth="160"
-      headerAlign="center"
-    >
+    <el-table-column v-for="week in weeks" :key="week" :minWidth="150" headerAlign="center">
+      <template #header>
+        <div class="table-header">
+          <div class="week">{{ weekMap[week] }}</div>
+          <div class="date">{{ headerDate(week) }}</div>
+        </div>
+      </template>
       <template #default="scope">
-        <CustomCol
-          v-if="scope.row[week]"
-          :courseList="scope.row[week]"
-          :termInformation="termInformation"
-          :inWeek="week"
-        />
+        <CustomCol v-if="scope.row[week]" :courseList="scope.row[week]" :termInformation="termInformation"
+          :inWeek="week" />
       </template>
     </el-table-column>
   </el-table>
@@ -83,6 +65,7 @@ const weekMap: Record<InWeekEnum, string> = {
   6: "周六",
   7: "周日",
 };
+const curWeek = props.termInformation.curDate.day() || 7;
 
 const insertTimeByCourse = (
   row: Record<string, ICourseScheduleRow>,
@@ -113,7 +96,7 @@ const insertTimeByCourse = (
     insertTimeByCourse(row, course, courseArrangement, nextTime, count + 1);
   }
 };
-const getTableData = () => {
+function getTableData() {
   const timeByCourseScheduleRow: Record<string, ICourseScheduleRow> = {};
   selectCourseList.map((course) => {
     course.courseArrangementList.map((courseArrangement) => {
@@ -194,7 +177,6 @@ const objectSpanMethod = ({
   };
 };
 
-const curWeek = props.termInformation.curDate.day() || 7;
 const dynamicCellClassName = ({ columnIndex }: { columnIndex: InWeekEnum }) => {
   let className = "custom-cell";
   if (curWeek === columnIndex) {
@@ -224,6 +206,17 @@ const locateCurrentCourseCol = () => {
 setTimeout(() => {
   locateCurrentCourseCol();
 }, 1000);
+
+const headerDate = (week: number) => {
+  const increment = week - curWeek;
+  const absIncrment = Math.abs(increment);
+  const date = dayjs(props.termInformation.curDate);
+  if (increment < 0) {
+    return date.subtract(absIncrment, 'day').format('MM-DD');
+  }
+  return date.add(absIncrment, 'day').format('MM-DD');
+}
+
 </script>
 
 <style lang="less" scoped>
@@ -237,6 +230,13 @@ setTimeout(() => {
   }
 
   .time {
+    font-weight: bold;
+  }
+}
+
+.table-header {
+  .week {
+    font-size: 1.25rem;
     font-weight: bold;
   }
 }
@@ -256,6 +256,10 @@ setTimeout(() => {
       pointer-events: none;
       color: @primaryText;
       background-color: #000;
+    }
+
+    .el-table__cell {
+      padding: 0;
     }
 
     .hight-light {

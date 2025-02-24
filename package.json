@@ -7,7 +7,8 @@
     "build": "vue-cli-service build",
     "predeploy": "vue-cli-service build && node deploy.js",
     "deploy": "gh-pages -d dist -r https://github.com/2020lc/blog -b static",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "publish": "gh-pages -d dist -r https://github.com/2020lc/blog -b static"
   },
   "dependencies": {
     "@tsparticles/slim": "^3.0.3",

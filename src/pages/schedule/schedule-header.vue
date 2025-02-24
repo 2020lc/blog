@@ -1,6 +1,6 @@
 <template>
   <div class="schedule-header">
-    <h1>2025年春季课程表</h1>
+    <h2>2025年春季课程表</h2>
     <section>
       <div class="row">
         <span>{{ formatDate.date }}</span>
@@ -11,20 +11,13 @@
         <div class="item">
           <el-input v-model="customOverallWeek" style="width: 100px">
             <template #append>
-              <el-button
-                class="blackText"
-                :icon="Search"
-                @click="() => emits('onSearchOverallWeek', customOverallWeek)"
-              />
+              <el-button class="blackText" :icon="Search"
+                @click="() => emits('onSearchOverallWeek', customOverallWeek)" />
             </template>
           </el-input>
         </div>
         <div class="item">
-          <el-button
-            class="blackText"
-            :icon="Refresh"
-            @click="emits('onRestore')"
-          />
+          <el-button class="blackText" :icon="Refresh" @click="emits('onRestore')" />
         </div>
       </div>
     </section>
@@ -74,22 +67,28 @@ watch(
     color: @secondaryText;
     display: flex;
     justify-content: center;
-    span + span {
+
+    span+span {
       margin-left: 8px;
     }
+
     .item {
       font-weight: normal;
-      & + .item {
+
+      &+.item {
         margin-left: 0.75rem;
       }
+
       .whiteText {
         color: #fff;
       }
+
       .blackText {
         color: #000;
       }
     }
   }
+
   .row-right {
     justify-content: right;
   }
