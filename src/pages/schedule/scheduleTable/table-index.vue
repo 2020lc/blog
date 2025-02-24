@@ -133,7 +133,6 @@ const getTableData = () => {
   });
 };
 const tableData: ICourseScheduleRow[] = getTableData();
-console.log(tableData);
 
 const objectSpanMethod = ({
   row,
@@ -148,7 +147,7 @@ const objectSpanMethod = ({
   if (!courseList.length) {
     return defaultObjectSpan;
   }
-  let useCourse = courseList.find((course) => {
+  const useCourse = courseList.find((course) => {
     const target = course.courseArrangementList.find((item) => {
       const inWeekMatch = item.inWeek === inWeek;
       switch (item.oddEven) {
@@ -181,13 +180,13 @@ const objectSpanMethod = ({
       case OddEvenWeekEnum.Odd:
         return inWeekMatch && isOddWeek;
       case OddEvenWeekEnum.Even:
-        return inWeekMatch && isOddWeek;
+        return inWeekMatch && !isOddWeek;
       default:
         return false;
     }
   });
   if (!useArrangement) {
-    return [0, 1];
+    return defaultObjectSpan;
   }
   return {
     rowspan: row.time === useArrangement.startTime ? useArrangement.nodes : 0,
@@ -231,39 +230,47 @@ setTimeout(() => {
 .time-box {
   text-align: center;
   color: #fff;
+
   .index {
     color: #ccc;
     font-weight: bold;
   }
+
   .time {
     font-weight: bold;
   }
 }
+
 .schedule-table.el-table {
   font-size: 1rem;
+
   ::v-deep(.el-table__header-wrapper) {
     .custom-header-cell {
       color: #fff;
       background-color: #000;
     }
   }
+
   ::v-deep(.el-table__body-wrapper) {
     .el-table__row {
       pointer-events: none;
       color: @primaryText;
       background-color: #000;
     }
+
     .hight-light {
       color: @secondaryText !important;
     }
   }
 }
+
 // 滚动固定
 .el-table.is-scrolling-right {
   ::v-deep(.el-table-fixed-column--left.is-last-column.el-table__cell) {
     border-right: 1px solid #fff;
   }
 }
+
 // 滚动左侧固定阴影
 .el-table.is-scrolling-middle {
   ::v-deep(.el-table-fixed-column--left.is-last-column::before) {

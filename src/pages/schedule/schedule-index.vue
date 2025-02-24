@@ -1,6 +1,10 @@
 <template>
   <div class="schedule-home">
-    <ScheduleHeader :termInformation="termInformation" />
+    <ScheduleHeader
+      :termInformation="termInformation"
+      @onSearchOverallWeek="handleSearchOverallWeek"
+      @onRestore="handleRestore"
+    />
     <br />
     <ScheduleTable :termInformation="termInformation" />
   </div>
@@ -26,6 +30,15 @@ const timer = setInterval(() => {
   termInformation.value.overallWeek = diffWeek;
   termInformation.value.isOddWeek = Boolean(diffWeek % 2);
 }, 1000);
+
+const handleSearchOverallWeek = (newOverallWeek: number) => {
+  const { beginDate } = termInformation.value;
+  const setDate = dayjs(beginDate).add(newOverallWeek - 1, "week");
+  termInformation.value.curDate = setDate;
+};
+const handleRestore = () => {
+  termInformation.value.curDate = dayjs();
+};
 
 onBeforeUnmount(() => {
   clearInterval(timer);

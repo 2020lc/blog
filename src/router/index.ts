@@ -1,24 +1,28 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'Home',
-    component: () => import('@/pages/home/home-index.vue'),
+    path: "/",
+    name: "Home",
+    component: () => import("@/pages/home/home-index.vue"),
   },
   {
-    path: '/other',
-    name: 'Other',
-    component: () => import('@/pages/other/other-index.vue'),
+    path: "/other",
+    name: "Other",
+    component: () => import("@/pages/other/other-index.vue"),
   },
   {
-    path: '/schedule',
-    name: 'Schedule',
-    component: () => import('@/pages/schedule/schedule-index.vue'),
-  }
+    path: "/schedule",
+    name: "Schedule",
+    component: () => import("@/pages/schedule/schedule-index.vue"),
+  },
+  {
+    path: "/:pathMatch(.*)",
+    redirect: { name: "Home" },
+  },
 ];
 
-const baseUrl = process.env.NODE_ENV === 'development' ? '/' : '/blog';
+const baseUrl = process.env.NODE_ENV === "development" ? "/" : "/blog";
 const router = createRouter({
   history: createWebHistory(baseUrl),
   routes,

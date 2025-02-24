@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "predeploy": "vue-cli-service build && node deploy.js",
     "deploy": "gh-pages -d dist -r https://github.com/2020lc/blog -b static",
     "lint": "vue-cli-service lint"
   },
