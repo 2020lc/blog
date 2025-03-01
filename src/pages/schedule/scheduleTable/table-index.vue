@@ -1,5 +1,5 @@
 <template>
-  <el-table class="schedule-table" max-height="500" header-cell-class-name="custom-header-cell" :data="tableData"
+  <el-table class="schedule-table" max-height="600" header-cell-class-name="custom-header-cell" :data="tableData"
     :span-method="objectSpanMethod" :border="true" :cell-class-name="dynamicCellClassName" :resizable="false">
     <el-table-column label="" width="120" fixed="left" prop="time" headerAlign="center">
       <template #default="scope">
@@ -225,12 +225,16 @@ const headerDate = (week: number) => {
   color: #fff;
 
   .index {
+    position: relative;
+    top: 3px;
     color: #ccc;
     font-weight: bold;
   }
 
   .time {
     font-weight: bold;
+    position: relative;
+    top: -3px;
   }
 }
 

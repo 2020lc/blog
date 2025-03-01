@@ -5,19 +5,26 @@
       <div class="row">
         <span>{{ formatDate.date }}</span>
         <span>{{ formatDate.curWeek }}</span>
-        <span> {{ formatDate.overallWeek }}</span>
-      </div>
-      <div class="row row-right">
-        <div class="item">
-          <el-input v-model="customOverallWeek" style="width: 100px">
-            <template #append>
-              <el-button class="blackText" :icon="Search"
-                @click="() => emits('onSearchOverallWeek', customOverallWeek)" />
-            </template>
-          </el-input>
-        </div>
-        <div class="item">
-          <el-button class="blackText" :icon="Refresh" @click="emits('onRestore')" />
+        <div class="term-wrapper">
+          <div class="flex-block">
+            <span>本学期第</span>
+            <div class="term">
+              <el-icon @click="() => emits('onSearchOverallWeek', customOverallWeek, -1)">
+                <ArrowLeft />
+              </el-icon>
+              <el-input v-model="customOverallWeek" maxlength="2" @change="handleCustomOverallWeek" size="small"
+                style="width: 28px" />
+              <el-icon>
+                <ArrowRight @click="() => emits('onSearchOverallWeek', customOverallWeek, 1)" />
+              </el-icon>
+            </div>
+            <span>周</span>
+          </div>
+          <div class="operate-box">
+            <el-icon @click="emits('onRestore')">
+              <Refresh />
+            </el-icon>
+          </div>
         </div>
       </div>
     </section>
@@ -25,8 +32,8 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, defineEmits, ref, computed, watch } from "vue";
-import { Search, Refresh } from "@element-plus/icons-vue";
+import { defineProps, defineEmits, ref, Ref, computed, watch } from "vue";
+import { ArrowLeft, ArrowRight, Refresh } from "@element-plus/icons-vue";
 import { weekMap } from "@/constant/date";
 import { ITermInformation } from "@/types/schedule";
 
@@ -35,28 +42,37 @@ interface IProps {
 }
 const props = defineProps<IProps>();
 const emits = defineEmits<{
-  (e: "onSearchOverallWeek", value: number): void;
+  (e: "onSearchOverallWeek", value: number, step?: number): void;
   (e: "onRestore", value: void): void;
 }>();
 
-const customOverallWeek = ref(0);
+const customOverallWeek: Ref<string> = ref('0');
 const formatDate = computed(() => {
   const { curDate, overallWeek } = props.termInformation;
   return {
     date: curDate.format("YYYY-MM-DD HH:mm:ss"),
     curWeek: weekMap[curDate.day()],
-    overallWeek: `本学期第${overallWeek}周`,
-  };
+    overallWeek
+  }
 });
 watch(
   () => props.termInformation.overallWeek,
   (overallWeek) => {
-    if (overallWeek) {
-      customOverallWeek.value = overallWeek;
+    if (overallWeek !== Number(customOverallWeek.value)) {
+      customOverallWeek.value = String(overallWeek).padStart(2, '0');
     }
   },
   { immediate: true }
 );
+
+const handleCustomOverallWeek = (val: string) => {
+  if (Object.is(NaN, Number(val))) {
+    emits('onRestore');
+    return;
+  }
+  const numVal = Number(val) < 0 ? 1 : Number(val);
+  emits('onSearchOverallWeek', numVal, 0);
+}
 </script>
 
 <style lang="less" scoped>
@@ -65,8 +81,6 @@ watch(
     font-size: 1.25rem;
     font-weight: bold;
     color: @secondaryText;
-    display: flex;
-    justify-content: center;
 
     span+span {
       margin-left: 8px;
@@ -89,8 +103,47 @@ watch(
     }
   }
 
-  .row-right {
-    justify-content: right;
+  .term-wrapper {
+    margin-top: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .flex-block {
+    display: flex;
+  }
+
+  .term {
+    display: flex;
+    align-items: center;
+
+    .el-icon:hover {
+      cursor: pointer;
+      opacity: .8;
+    }
+
+    .el-input {
+      ::v-deep(.el-input__wrapper) {
+        background-color: #000;
+        box-shadow: none;
+
+        input {
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  .operate-box {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+
+    .el-icon:hover {
+      cursor: pointer;
+      opacity: .8;
+    }
   }
 }
 </style>
