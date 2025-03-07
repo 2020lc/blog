@@ -8,8 +8,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, Ref, onBeforeUnmount } from "vue";
+import { ref, Ref, h, onBeforeUnmount, nextTick } from "vue";
 import dayjs from "dayjs";
+import { ElMessageBox } from 'element-plus';
+import GoddessesDay from "@/component/goddesses-day.vue";
 import ScheduleHeader from "./schedule-header.vue";
 import ScheduleTable from "./scheduleTable/table-index.vue";
 import { ITermInformation } from "@/types/schedule";
@@ -30,7 +32,6 @@ const timer = setInterval(() => {
 
 const handleSearchOverallWeek = (newOverallWeek: number, step = 0) => {
   const handleWeek = Number(newOverallWeek) + step;
-  console.log('接受', handleWeek);
   if (handleWeek <= 0) {
     return;
   }
@@ -46,6 +47,23 @@ const handleRestore = () => {
 onBeforeUnmount(() => {
   clearInterval(timer);
 });
+nextTick(() => {
+  const { curDate } = termInformation.value;
+  if (curDate.format('MM-DD') === '03-08') {
+    ElMessageBox({
+      title: '宝宝女神节快乐^o^',
+      message: h(GoddessesDay),
+      showCancelButton: false,
+      center: true,
+      showClose: false,
+      closeOnClickModal: false,
+      confirmButtonText: '宝宝真棒',
+      customStyle: {
+        width: '300px'
+      }
+    })
+  }
+})
 </script>
 
 <style lang="less" scoped></style>
