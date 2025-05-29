@@ -173,7 +173,7 @@ const dxyydxII = {
       inWeek: InWeekEnum.Wednesday,
       oddEven: OddEvenWeekEnum.Normal,
       startWeek: 1,
-      endWeek: 17,
+      endWeek: 16,
       startTime: "10:00",
       nodes: 2,
     },
@@ -281,6 +281,14 @@ const whrlx = {
       startTime: "14:00",
       nodes: 2,
     },
+    {
+      inWeek: InWeekEnum.Thursday,
+      oddEven: OddEvenWeekEnum.Normal,
+      startWeek: 17,
+      endWeek: 17,
+      startTime: "14:00",
+      nodes: 2,
+    },
   ],
 };
 const syysswycz = {
@@ -292,7 +300,7 @@ const syysswycz = {
       inWeek: InWeekEnum.Thursday,
       oddEven: OddEvenWeekEnum.Odd,
       startWeek: 1,
-      endWeek: 16,
+      endWeek: 17,
       startTime: "16:00",
       nodes: 2,
     },
