@@ -1,8 +1,9 @@
 <template>
   <div class="table-col">
-    <template v-if="showCourse">
+    <template v-if="showCourse && showCourse.use">
       <div>{{ showCourse.name }}</div>
       <div>{{ `(${showCourse.location})` }}</div>
+      <div v-if="showCourse.isExam" class="exam-label">结课考试</div>
     </template>
   </div>
 </template>
@@ -15,25 +16,32 @@ interface IProps {
   termInformation: ITermInformation;
   courseList: ICourse[];
   inWeek: number;
+  row: any;
 }
 const props = defineProps<IProps>();
 
 const showCourse = computed(() => {
-  const { termInformation, courseList, inWeek } = props;
+  const { termInformation, courseList, inWeek, row } = props;
   const { overallWeek, isOddWeek } = termInformation || {};
   if (!courseList || !overallWeek) {
     return "";
   }
-  return courseList.find((course) => {
+  let isExam = false;
+  let use = false;
+  const ans = courseList.find((course) => {
     const target = course.courseArrangementList.find((item) => {
       const inWeekMatch = item.inWeek === inWeek;
+      const { startWeek, endWeek } = item;
+      const startClass = overallWeek >= startWeek;
+      const noEndClass = overallWeek <= (endWeek || 99);
+      const findInterval = startClass && noEndClass;
       switch (item.oddEven) {
         case OddEvenWeekEnum.Normal:
-          return inWeekMatch;
+          return inWeekMatch && findInterval;
         case OddEvenWeekEnum.Odd:
-          return inWeekMatch && isOddWeek;
+          return inWeekMatch && isOddWeek && findInterval;
         case OddEvenWeekEnum.Even:
-          return inWeekMatch && !isOddWeek;
+          return inWeekMatch && !isOddWeek && findInterval;
         default:
           return false;
       }
@@ -41,16 +49,19 @@ const showCourse = computed(() => {
     if (!target) {
       return false;
     }
-    const { startWeek, endWeek } = target;
-    const startClass = overallWeek >= startWeek;
-    const noEndClass = overallWeek <= (endWeek || 99);
-    return startClass && noEndClass;
+    isExam = overallWeek === target.examWeek;
+    use = target.startTime <= row.time;
+    return true;
   });
+  return ans ? { ...ans, isExam, use } : undefined;
 });
 </script>
 
 <style lang="less" scoped>
 .table-col {
   text-align: center;
+}
+.exam-label {
+  color: red;
 }
 </style>

@@ -1,7 +1,21 @@
 <template>
-  <el-table class="schedule-table" max-height="600" header-cell-class-name="custom-header-cell" :data="tableData"
-    :span-method="objectSpanMethod" :border="true" :cell-class-name="dynamicCellClassName" :resizable="false">
-    <el-table-column label="" width="120" fixed="left" prop="time" headerAlign="center">
+  <el-table
+    class="schedule-table"
+    max-height="600"
+    header-cell-class-name="custom-header-cell"
+    :data="tableData"
+    :span-method="objectSpanMethod"
+    :border="true"
+    :cell-class-name="dynamicCellClassName"
+    :resizable="false"
+  >
+    <el-table-column
+      label=""
+      width="120"
+      fixed="left"
+      prop="time"
+      headerAlign="center"
+    >
       <template #default="scope">
         <div class="time-box">
           <div class="index">{{ scope.$index + 1 }}</div>
@@ -9,7 +23,12 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column v-for="week in weeks" :key="week" :minWidth="150" headerAlign="center">
+    <el-table-column
+      v-for="week in weeks"
+      :key="week"
+      :minWidth="150"
+      headerAlign="center"
+    >
       <template #header>
         <div class="table-header">
           <div class="week">{{ weekMap[week] }}</div>
@@ -17,8 +36,13 @@
         </div>
       </template>
       <template #default="scope">
-        <CustomCol v-if="scope.row[week]" :courseList="scope.row[week]" :termInformation="termInformation"
-          :inWeek="week" />
+        <CustomCol
+          v-if="scope.row[week]"
+          :courseList="scope.row[week]"
+          :termInformation="termInformation"
+          :inWeek="week"
+          :row="scope.row"
+        />
       </template>
     </el-table-column>
   </el-table>
@@ -114,7 +138,7 @@ function getTableData() {
     }
     return { time };
   });
-};
+}
 const tableData: ICourseScheduleRow[] = getTableData();
 
 const objectSpanMethod = ({
@@ -133,13 +157,17 @@ const objectSpanMethod = ({
   const useCourse = courseList.find((course) => {
     const target = course.courseArrangementList.find((item) => {
       const inWeekMatch = item.inWeek === inWeek;
+      const { startWeek, endWeek } = item;
+      const startClass = overallWeek >= startWeek;
+      const noEndClass = overallWeek <= (endWeek || 99);
+      const findInterval = startClass && noEndClass;
       switch (item.oddEven) {
         case OddEvenWeekEnum.Normal:
-          return inWeekMatch;
+          return inWeekMatch && findInterval;
         case OddEvenWeekEnum.Odd:
-          return inWeekMatch && isOddWeek;
+          return inWeekMatch && isOddWeek && findInterval;
         case OddEvenWeekEnum.Even:
-          return inWeekMatch && !isOddWeek;
+          return inWeekMatch && !isOddWeek && findInterval;
         default:
           return false;
       }
@@ -147,23 +175,24 @@ const objectSpanMethod = ({
     if (!target) {
       return false;
     }
-    const { startWeek, endWeek } = target;
-    const startClass = overallWeek >= startWeek;
-    const noEndClass = overallWeek <= (endWeek || 99);
-    return startClass && noEndClass;
+    return true;
   });
   if (!useCourse) {
     return defaultObjectSpan;
   }
   const useArrangement = useCourse.courseArrangementList.find((item) => {
     const inWeekMatch = item.inWeek === inWeek;
+    const { startWeek, endWeek } = item;
+    const startClass = overallWeek >= startWeek;
+    const noEndClass = overallWeek <= (endWeek || 99);
+    const findInterval = startClass && noEndClass;
     switch (item.oddEven) {
       case OddEvenWeekEnum.Normal:
-        return inWeekMatch;
+        return inWeekMatch && findInterval;
       case OddEvenWeekEnum.Odd:
-        return inWeekMatch && isOddWeek;
+        return inWeekMatch && isOddWeek && findInterval;
       case OddEvenWeekEnum.Even:
-        return inWeekMatch && !isOddWeek;
+        return inWeekMatch && !isOddWeek && findInterval;
       default:
         return false;
     }
@@ -171,10 +200,13 @@ const objectSpanMethod = ({
   if (!useArrangement) {
     return defaultObjectSpan;
   }
-  return {
-    rowspan: row.time === useArrangement.startTime ? useArrangement.nodes : 0,
-    colspan: 1,
-  };
+  const { startTime, nodes } = useArrangement;
+  let rowspan = row.time === startTime ? nodes : 0;
+  // 找到了对应的课程后，对于课程的开始时间若低于课程表的时间，则说明该课程不需要处理
+  if (row.time < startTime) {
+    return defaultObjectSpan;
+  }
+  return [rowspan, 1];
 };
 
 const dynamicCellClassName = ({ columnIndex }: { columnIndex: InWeekEnum }) => {
@@ -212,11 +244,10 @@ const headerDate = (week: number) => {
   const absIncrment = Math.abs(increment);
   const date = dayjs(props.termInformation.curDate);
   if (increment < 0) {
-    return date.subtract(absIncrment, 'day').format('MM-DD');
+    return date.subtract(absIncrment, "day").format("MM-DD");
   }
-  return date.add(absIncrment, 'day').format('MM-DD');
-}
-
+  return date.add(absIncrment, "day").format("MM-DD");
+};
 </script>
 
 <style lang="less" scoped>

@@ -27,6 +27,7 @@ export interface ICourseArrangementInfo {
   inWeek: InWeekEnum;
   startWeek: number;
   endWeek?: number;
+  examWeek?: number;
   oddEven: OddEvenWeekEnum;
   startTime: string;
   nodes: number;
